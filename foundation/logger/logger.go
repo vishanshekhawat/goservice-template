@@ -8,14 +8,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const (
-	RequestIDKey     = "request_id"
-	CustomerIDKey    = "customer_id"
-	LogRequestIDKey  = "request_id"
-	LogCustomerIDKey = "customer_id"
-	LogLevelEnvVar   = "LOG_LEVEL"
-)
-
 type Logger struct {
 	*zap.SugaredLogger
 }

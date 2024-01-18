@@ -26,7 +26,7 @@ func main() {
 	defer log.Sync()
 
 	if err := run(log); err != nil {
-		log.Errorw("startup", "ERROR", err)
+		log.Errorw(context.TODO(), "startup", "ERROR", err)
 		log.Sync()
 		os.Exit(1)
 	}
