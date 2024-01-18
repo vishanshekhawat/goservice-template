@@ -33,13 +33,13 @@ func main() {
 }
 
 func run(log *logger.Logger) error {
-	log.Infow("startup", "GOMAXPROCS", runtime.GOMAXPROCS(0), "BUILD - ", build)
+	log.Infow(context.TODO(), "startup", "GOMAXPROCS", runtime.GOMAXPROCS(0), "BUILD - ", build)
 
 	//----------------------Service Start-------------------------//
-	log.Infow("starting service", "version", build)
-	defer log.Infow("shutdown complete")
+	log.Info("starting service", "version", build)
+	defer log.Info("shutdown complete")
 
-	log.Infow("startup", "status", "initializing V1 API support")
+	log.Infow(context.TODO(), "startup", "status", "initializing V1 API support")
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
@@ -61,7 +61,7 @@ func run(log *logger.Logger) error {
 	serverErrors := make(chan error, 1)
 
 	go func() {
-		log.Infow("startup", "status", "api router started", "host", api.Addr)
+		log.Infow(context.TODO(), "startup", "status", "api router started", "host", api.Addr)
 		serverErrors <- api.ListenAndServe()
 	}()
 
@@ -73,8 +73,8 @@ func run(log *logger.Logger) error {
 		return fmt.Errorf("server error: %w", err)
 
 	case sig := <-shutdown:
-		log.Infow("shutdown", "status", "shutdown started", "signal", sig)
-		defer log.Infow("shutdown", "status", "shutdown complete", "signal", sig)
+		log.Infow(context.TODO(), "shutdown", "status", "shutdown started", "signal", sig)
+		defer log.Infow(context.TODO(), "shutdown", "status", "shutdown complete", "signal", sig)
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 

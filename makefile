@@ -9,5 +9,5 @@ run-user-service-local:
 
 
 test-endpoint-local:
-	curl -il localhost:3000/api/api1/v2/12
+	curl -il localhost:3000/test
 

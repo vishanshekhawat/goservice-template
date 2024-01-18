@@ -2,11 +2,8 @@ package logger
 
 import (
 	"context"
-	"crypto/md5"
-	"fmt"
-	"os"
-	"strings"
 
+	"github.com/vishn007/go-service-template/foundation/web"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -47,27 +44,36 @@ func New(service string, outputPaths ...string) (*Logger, error) {
 	return &Logger{log.Sugar()}, nil
 }
 
-func (log *Logger) LogEnvVars(ctx context.Context, secretEnvVars []string) {
-	argsList := make([]interface{}, 0)
+func (log *Logger) Infow(ctx context.Context, message string, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Infow(message, args...)
+}
 
-	for _, envVar := range os.Environ() {
-		envVarPair := strings.Split(envVar, "=")
-		if len(envVarPair) != 2 {
-			continue
-		}
-		envVarkey := envVarPair[0]
-		envVarValue := envVarPair[1]
+// setCommonArgs adds common set of key-value pairs to the arguments list
+func setCommonArgs(ctx context.Context, args []interface{}) []interface{} {
+	args = setTraceID(ctx, args)
+	args = setCoRelationID(ctx, args)
+	return args
+}
 
-		for _, s := range secretEnvVars {
-			if s == envVarkey {
-				envVarValue = fmt.Sprintf("%x", md5.Sum([]byte(envVarValue)))
-			}
-		}
-
-		argsList = SetKeyValueToArgs(argsList, envVarkey, envVarValue)
+// setTraceID adds request-id key-value to the argument list
+func setTraceID(ctx context.Context, args []interface{}) []interface{} {
+	reqID := web.GetTraceID(ctx)
+	if reqID == "00000000-0000-0000-0000-000000000000" {
+		return args
 	}
+	args = SetKeyValueToArgs(args, "trace_id", reqID)
+	return args
+}
 
-	log.Infow("Environment Variables", argsList...)
+// setTraceID adds request-id key-value to the argument list
+func setCoRelationID(ctx context.Context, args []interface{}) []interface{} {
+	reqID := web.GetCoRelationID(ctx)
+	if reqID == "00000000-0000-0000-0000-000000000000" {
+		return args
+	}
+	args = SetKeyValueToArgs(args, "corelation_id", reqID)
+	return args
 }
 
 func SetKeyValueToArgs(args []interface{}, key interface{}, val interface{}) []interface{} {

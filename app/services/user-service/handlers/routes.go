@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/users"
+	"github.com/vishn007/go-service-template/buisness/middleware"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
 )
@@ -17,9 +18,10 @@ type APIMuxConfig struct {
 
 func APIMux(cfg APIMuxConfig) *web.App {
 
-	app := web.NewApp(cfg.Shutdown)
+	app := web.NewApp(cfg.Shutdown, middleware.Logger(cfg.Log))
 
-	app.Handle(http.MethodGet, "/test", users.Test)
+	userHandlers := users.New(cfg.Log)
+	app.Handle(http.MethodGet, "/test", userHandlers.Test)
 
 	return app
 }
