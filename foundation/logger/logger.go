@@ -44,9 +44,44 @@ func New(service string, outputPaths ...string) (*Logger, error) {
 	return &Logger{log.Sugar()}, nil
 }
 
+func (log *Logger) Errorw(ctx context.Context, message string, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Errorw(message, args...)
+}
+
+func (log *Logger) Error(ctx context.Context, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Error(args...)
+}
+
 func (log *Logger) Infow(ctx context.Context, message string, args ...interface{}) {
 	args = setCommonArgs(ctx, args)
 	log.SugaredLogger.Infow(message, args...)
+}
+
+func (log *Logger) Info(ctx context.Context, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Info(args...)
+}
+
+func (log *Logger) Warnw(ctx context.Context, message string, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Warnw(message, args...)
+}
+
+func (log *Logger) Warn(ctx context.Context, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Warn(args...)
+}
+
+func (log *Logger) Debugw(ctx context.Context, message string, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Debugw(message, args...)
+}
+
+func (log *Logger) Debug(ctx context.Context, args ...interface{}) {
+	args = setCommonArgs(ctx, args)
+	log.SugaredLogger.Debug(args...)
 }
 
 // setCommonArgs adds common set of key-value pairs to the arguments list

@@ -36,8 +36,7 @@ func run(log *logger.Logger) error {
 	log.Infow(context.TODO(), "startup", "GOMAXPROCS", runtime.GOMAXPROCS(0), "BUILD - ", build)
 
 	//----------------------Service Start-------------------------//
-	log.Info("starting service", "version", build)
-	defer log.Info("shutdown complete")
+	log.Info(context.TODO(), "starting service", "version", build)
 
 	log.Infow(context.TODO(), "startup", "status", "initializing V1 API support")
 
