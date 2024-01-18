@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"math/rand"
 	"net/http"
 
 	"github.com/vishn007/go-service-template/foundation/logger"
@@ -27,7 +28,9 @@ func (h *UserHandlers) Test(ctx context.Context, w http.ResponseWriter, r *http.
 
 	// Validate the data
 	// Call into the business layer
-
+	if n := rand.Intn(100); n%2 == 0 {
+		panic("test")
+	}
 	status := struct {
 		Status string
 	}{
