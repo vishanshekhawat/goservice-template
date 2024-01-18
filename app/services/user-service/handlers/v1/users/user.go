@@ -2,8 +2,9 @@ package users
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
+
+	"github.com/vishn007/go-service-template/foundation/web"
 )
 
 // Handlers manages the set of user endpoints.
@@ -20,17 +21,5 @@ func Test(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 		Status: "OK OK",
 	}
 
-	jsonData, err := json.Marshal(status)
-	if err != nil {
-		return err
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	if _, err := w.Write(jsonData); err != nil {
-		return err
-	}
-
-	return nil
+	return web.Respond(ctx, w, status, http.StatusOK)
 }
