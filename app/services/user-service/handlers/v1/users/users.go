@@ -25,7 +25,7 @@ func New(log *logger.Logger) *UserHandlers {
 
 // Test is our example route.
 func (h *UserHandlers) Test(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
-
+	panic("test")
 	// Validate the data
 	// Call into the business layer
 	if n := rand.Intn(100); n%2 == 0 {
