@@ -22,6 +22,7 @@ func APIMux(cfg APIMuxConfig) *web.App {
 
 	userHandlers := users.New(cfg.Log)
 	app.Handle(http.MethodGet, "/test", userHandlers.Test)
+	app.Handle(http.MethodPost, "/api/v1/get-users", userHandlers.GetUsers)
 
 	return app
 }

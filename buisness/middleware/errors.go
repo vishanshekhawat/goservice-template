@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/vishn007/go-service-template/buisness/customerrors"
+	"github.com/vishn007/go-service-template/buisness/validate"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
 )
@@ -28,7 +29,13 @@ func Errors(log *logger.Logger) web.Middleware {
 				var status int
 
 				switch {
-
+				case validate.IsFieldErrors(err):
+					fieldErrors := validate.GetFieldErrors(err)
+					er = ErrorResponse{
+						Error:  "data validation error",
+						Fields: fieldErrors.Fields(),
+					}
+					status = http.StatusBadRequest
 				case customerrors.IsRequestError(err):
 					reqErr := customerrors.GetRequestError(err)
 					er = ErrorResponse{

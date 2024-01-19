@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math/rand"
 	"net/http"
+	"strconv"
 
 	"github.com/vishn007/go-service-template/app/services/user-service/service"
 	"github.com/vishn007/go-service-template/buisness/customerrors"
@@ -44,4 +45,24 @@ func (h *UserHandlers) Test(ctx context.Context, w http.ResponseWriter, r *http.
 	h.log.Infow(ctx, "Test Message")
 
 	return web.Respond(ctx, w, res, http.StatusOK)
+}
+
+// Test is our example route.
+func (h *UserHandlers) GetUsers(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+	// Validate the data
+	var app UserRequest
+	if err := web.Decode(r, &app); err != nil {
+		return err
+	}
+
+	// Call into the business layer
+	res := h.srv.GetUsers(ctx)
+
+	// Reponse to Client
+	resp := UserResponse{
+		Users:      res,
+		TotalUsers: strconv.Itoa(len(res)),
+	}
+	return web.Respond(ctx, w, resp, http.StatusOK)
 }

@@ -4,7 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
+
+type Response struct {
+	StatusCode   string `json:"status_code"`
+	TraceID      string `json:"trace_id"`
+	CorelationID string `json:"corelation_id"`
+	Data         any    `json:"data"`
+}
 
 // Respond converts a Go value to JSON and sends it to the client.
 func Respond(ctx context.Context, w http.ResponseWriter, data any, statusCode int) error {
@@ -14,7 +22,14 @@ func Respond(ctx context.Context, w http.ResponseWriter, data any, statusCode in
 		return nil
 	}
 
-	jsonData, err := json.Marshal(data)
+	resp := Response{
+		StatusCode:   strconv.Itoa(statusCode),
+		TraceID:      GetTraceID(ctx),
+		CorelationID: GetCoRelationID(ctx),
+		Data:         data,
+	}
+
+	jsonData, err := json.Marshal(resp)
 	if err != nil {
 		return err
 	}
