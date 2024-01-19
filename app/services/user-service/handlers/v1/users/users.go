@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 
+	"github.com/vishn007/go-service-template/app/services/user-service/service"
 	"github.com/vishn007/go-service-template/buisness/customerrors"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
@@ -14,12 +15,16 @@ import (
 // Handlers manages the set of user endpoints.
 type UserHandlers struct {
 	log *logger.Logger
+	srv service.Service
 }
 
 // New constructs a handlers for route access.
 func New(log *logger.Logger) *UserHandlers {
+
+	userService := service.NewService(log)
 	return &UserHandlers{
 		log: log,
+		srv: userService,
 	}
 }
 
@@ -34,13 +39,9 @@ func (h *UserHandlers) Test(ctx context.Context, w http.ResponseWriter, r *http.
 		return customerrors.NewRequestError(errors.New("TRUSTED ERROR"), http.StatusBadRequest)
 	}
 
-	status := struct {
-		Status string
-	}{
-		Status: "OK OK",
-	}
+	res := h.srv.GetUsers(ctx)
 
 	h.log.Infow(ctx, "Test Message")
 
-	return web.Respond(ctx, w, status, http.StatusOK)
+	return web.Respond(ctx, w, res, http.StatusOK)
 }
