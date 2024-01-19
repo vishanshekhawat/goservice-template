@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/vishn007/go-service-template/buisness/auth"
+	"github.com/vishn007/go-service-template/buisness/web/auth"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
 )

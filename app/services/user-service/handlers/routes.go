@@ -6,8 +6,8 @@ import (
 
 	authHandler "github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/auth"
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/users"
-	"github.com/vishn007/go-service-template/buisness/auth"
-	"github.com/vishn007/go-service-template/buisness/middleware"
+	"github.com/vishn007/go-service-template/buisness/web/auth"
+	"github.com/vishn007/go-service-template/buisness/web/middleware"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
 )

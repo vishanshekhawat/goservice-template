@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/vishn007/go-service-template/buisness/auth"
 	"github.com/vishn007/go-service-template/buisness/customerrors"
 	"github.com/vishn007/go-service-template/buisness/validate"
+	"github.com/vishn007/go-service-template/buisness/web/auth"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
 )

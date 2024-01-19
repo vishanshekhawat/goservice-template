@@ -11,7 +11,8 @@ import (
 	"time"
 
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers"
-	"github.com/vishn007/go-service-template/buisness/auth"
+	"github.com/vishn007/go-service-template/buisness/web/auth"
+
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"go.uber.org/zap"
 )
