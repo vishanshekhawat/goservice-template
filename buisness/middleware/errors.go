@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/vishn007/go-service-template/buisness/customerrors"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
 )
@@ -27,6 +28,20 @@ func Errors(log *logger.Logger) web.Middleware {
 				var status int
 
 				switch {
+
+				case customerrors.IsRequestError(err):
+					reqErr := customerrors.GetRequestError(err)
+					er = ErrorResponse{
+						Error: reqErr.Error(),
+					}
+					status = reqErr.Status
+
+				case customerrors.IsRateLimitError(err):
+					reqErr := customerrors.GetRateLimitError(err)
+					er = ErrorResponse{
+						Error: reqErr.Error(),
+					}
+					status = reqErr.Status
 
 				default:
 					er = ErrorResponse{

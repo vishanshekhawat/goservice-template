@@ -93,7 +93,7 @@ func setTraceID(ctx context.Context, args []interface{}) []interface{} {
 	return args
 }
 
-// setTraceID adds request-id key-value to the argument list
+// setCoRelationID adds request-id key-value to the argument list
 func setCoRelationID(ctx context.Context, args []interface{}) []interface{} {
 	reqID := web.GetCoRelationID(ctx)
 	if reqID == "00000000-0000-0000-0000-000000000000" {
