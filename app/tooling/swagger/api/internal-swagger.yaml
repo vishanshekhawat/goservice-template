@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  title: FORM Go Service Template
+  version: 1.0.0
+  description: Go Service Template
+
+servers:
+  - url: http://localhost:3000
+    description: user-service
+tags:
+  - name: user-service
+    description: user-service service is responsible for user management
+
+paths:
+  /test:
+    get:
+      tags:
+        - user-service
+      summary: test end point
+      description: test end point
+      responses:
+        200:
+          description: OK

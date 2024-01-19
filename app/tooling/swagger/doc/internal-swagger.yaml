@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  title: FORM IRaaS API
+  version: 1.0.0
+  description: IRaaS Internal API
+
+servers:
+  - url: http://localhost:8081
+    description: iraas-service
+tags:
+  - name: iraas-customers
+    description: iraas-customers service is responsible for customers management
+  - name: iraas-service
+    description: iraas-service is responsible for creating photo grid and provide configuration to mobile api's
+paths:
+  /api/v1/customers:
+    post:
+      tags:
+        - iraas-customers
+      summary: create a new customer
+      description: Creates a new customer for IRaaS platform
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+      responses:
+        201:
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customerWithSecret'
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage400'
+              examples:
+                URN is not unique:
+                  value:
+                    message: "A customer with that URN already exists"
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage500'
+
+  /api/v1/scene_types:
+    get:
+      tags:
+        - iraas-service
+      security:
+        - bearerAuth: []
+      summary: get available scene types
+      description: Retrieves the scene types for a given customer
+      parameters:
+        - $ref: '#/components/parameters/authorizationToken'
+        - $ref: '#/components/parameters/requestId'
+      responses:
+        200:
+          description: A list of available scene types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - code
+                    - name
+                    - sdk_configuration_id
+                  properties:
+                    code:
+                      type: string
+                      example: cooler-1
+                    name:
+                      type: string
+                      example: Cooler
+                    sdk_configuration_id:
+                      type: integer
+                      example: 87
+
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage500'
+
+components:
+  parameters:
+    requestId:
+      name: Request-ID
+      in: header
+      description: An optional unique identifier of the request to be used to track messages in the system
+      required: false
+      schema:
+        type: string
+        example: m9XtCx9Wl4
+
+    authorizationToken:
+      name: Authorization
+      in: header
+      description: An __access__ bearer token
+      required: true
+      schema:
+        type: string
+        example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcl9pZCI6MSwidG9rZW5fdHlwZSI6IkFQUF9UT0tFTiIsImlzcyI6IklSQXV0aFNlcnZpY2UiLCJleH      AiOjE2NzMzNjU3NTYsImlhdCI6MTY3MzM2NDg1Nn0.NggufoAE5AQtE72YLbua6OxhinIl8Z9fUQRKNseybYE
+
+  schemas:
+    customer:
+      type: object
+      required:
+        - name
+        - urn
+        - active
+      properties:
+        name:
+          type: string
+          description: Customer name
+          example: "Foo Bar"
+        urn:
+          type: string
+          description: Customer unique id in the URN format
+          example: "urn:gsc:customer:123"
+        active:
+          type: boolean
+          description: A flag indicating if the customer is active or not
+    customerWithSecret:
+      allOf:
+        - $ref: '#/components/schemas/customer'
+        - type: object
+          required:
+            - id
+            - client_secret
+          properties:
+            id:
+              type: string
+              example: 123
+            client_secret:
+              type: string
+              example: g2Qqy5hbz8
+
+    errorMessage400:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Invalid xxx
+
+    errorMessage500:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Well, this is embarassing
