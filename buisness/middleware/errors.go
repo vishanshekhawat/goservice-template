@@ -2,8 +2,10 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"github.com/vishn007/go-service-template/buisness/auth"
 	"github.com/vishn007/go-service-template/buisness/customerrors"
 	"github.com/vishn007/go-service-template/buisness/validate"
 	"github.com/vishn007/go-service-template/foundation/logger"
@@ -24,7 +26,7 @@ func Errors(log *logger.Logger) web.Middleware {
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 			err := handler(ctx, w, r)
 			if err != nil {
-
+				fmt.Println(err)
 				var er ErrorResponse
 				var status int
 
@@ -42,7 +44,11 @@ func Errors(log *logger.Logger) web.Middleware {
 						Error: reqErr.Error(),
 					}
 					status = reqErr.Status
-
+				case auth.IsAuthError(err):
+					er = ErrorResponse{
+						Error: http.StatusText(http.StatusUnauthorized),
+					}
+					status = http.StatusUnauthorized
 				case customerrors.IsRateLimitError(err):
 					reqErr := customerrors.GetRateLimitError(err)
 					er = ErrorResponse{

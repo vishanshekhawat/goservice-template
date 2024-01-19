@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers"
+	"github.com/vishn007/go-service-template/buisness/auth"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"go.uber.org/zap"
 )
@@ -40,12 +41,28 @@ func run(log *logger.Logger) error {
 
 	log.Infow(context.TODO(), "startup", "status", "initializing V1 API support")
 
+	//--------------------Auth----------------------//
+
+	// Simple keystore versus using Vault.
+
+	authCfg := auth.Config{
+		Log:    log,
+		Issuer: "ADMIN",
+	}
+
+	auth, err := auth.New(authCfg)
+	if err != nil {
+		return fmt.Errorf("constructing auth: %w", err)
+	}
+	//--------------------Auth----------------------//
+
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
 	apiMux := handlers.APIMux(handlers.APIMuxConfig{
 		Shutdown: shutdown,
 		Log:      log,
+		Auth:     auth,
 	})
 
 	api := http.Server{
