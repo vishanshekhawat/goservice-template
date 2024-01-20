@@ -27,7 +27,7 @@ func APIMux(cfg APIMuxConfig) *web.App {
 	authHandlers := authHandler.New(cfg.Log, cfg.Auth)
 	app.Handle(http.MethodGet, "/test", userHandlers.Test)
 	app.Handle(http.MethodPost, "/generate-token", authHandlers.GenerateToken)
-	app.Handle(http.MethodPost, "/test/auth", userHandlers.Test, middleware.Authenticate(cfg.Auth))
+	app.Handle(http.MethodPost, "/test/auth", userHandlers.Test, middleware.Authenticate(cfg.Auth), middleware.Authorize(cfg.Auth, auth.RuleAdminOnly))
 	app.Handle(http.MethodPost, "/api/v1/get-users", userHandlers.GetUsers)
 
 	return app

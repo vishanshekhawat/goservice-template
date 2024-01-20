@@ -26,7 +26,7 @@ func Errors(log *logger.Logger) web.Middleware {
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 			err := handler(ctx, w, r)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Printf("%#v", err)
 				var er ErrorResponse
 				var status int
 

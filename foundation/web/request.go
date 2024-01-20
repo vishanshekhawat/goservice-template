@@ -3,6 +3,8 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/vishn007/go-service-template/buisness/customerrors"
 )
 
 type validator interface {
@@ -17,7 +19,7 @@ func Decode(r *http.Request, val any) error {
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(val); err != nil {
-		return err
+		return customerrors.NewRequestError(err, http.StatusBadRequest)
 	}
 
 	if v, ok := val.(validator); ok {
