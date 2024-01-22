@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/vishn007/go-service-template/buisness/core/user"
 	"github.com/vishn007/go-service-template/buisness/web/auth"
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"github.com/vishn007/go-service-template/foundation/web"
@@ -38,7 +37,7 @@ func (h *AuthHandlers) GenerateToken(ctx context.Context, w http.ResponseWriter,
 	expirationTime := time.Now().Add(time.Minute * time.Duration(15))
 
 	tokenclaims := &auth.Claims{
-		Roles:  []user.Role{user.RoleAdmin},
+		Roles:  []string{"ADMIN"},
 		UserID: app.UserName,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: &jwt.NumericDate{

@@ -8,7 +8,6 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/open-policy-agent/opa/rego"
-	"github.com/vishn007/go-service-template/buisness/core/user"
 	"github.com/vishn007/go-service-template/foundation/logger"
 )
 
@@ -19,7 +18,7 @@ var ErrForbidden = errors.New("attempted action is not allowed")
 
 // Claims represents the authorization claims transmitted via a JWT.
 type Claims struct {
-	Roles  []user.Role `json:"roles"`
+	Roles  []string `json:"roles"`
 	UserID string
 	jwt.RegisteredClaims
 }
@@ -104,6 +103,7 @@ func (a *Auth) Authenticate(ctx context.Context, bearerToken string) (Claims, er
 // none of the input roles are within the user's claims, we return an error
 // otherwise the user is authorized.
 func (a *Auth) Authorize(ctx context.Context, claims Claims, rule string) error {
+
 	input := map[string]any{
 		"Roles": claims.Roles,
 	}
