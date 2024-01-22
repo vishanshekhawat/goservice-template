@@ -8,7 +8,7 @@ import (
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/users"
 	"github.com/vishn007/go-service-template/app/services/user-service/service"
 	"github.com/vishn007/go-service-template/buisness/repo"
-	"github.com/vishn007/go-service-template/buisness/repo/user"
+	"github.com/vishn007/go-service-template/buisness/repo/userrepo"
 	"github.com/vishn007/go-service-template/buisness/web/auth"
 	"github.com/vishn007/go-service-template/buisness/web/middleware"
 	"github.com/vishn007/go-service-template/foundation/logger"
@@ -27,7 +27,7 @@ func APIMux(cfg APIMuxConfig) *web.App {
 
 	app := web.NewApp(cfg.Shutdown, middleware.Logger(cfg.Log), middleware.Errors(cfg.Log), middleware.Panics(), middleware.RateLimiter(), middleware.Metrics())
 
-	userRepo := user.GetUserRepository(cfg.Db)
+	userRepo := userrepo.GetUserDBRepository(cfg.Db)
 
 	userService := service.NewService(cfg.Log, userRepo)
 	userHandlers := users.New(cfg.Log, userService)
