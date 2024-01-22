@@ -1,0 +1,34 @@
+version: '3.1'
+
+services:
+  user-service:
+    build:
+        context: .
+        args:
+          - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+        dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - 3000:3000
+    depends_on:
+      user-service-db:
+        condition: service_healthy
+
+  user-service-db:
+    image: postgres:latest
+    container_name: user-service-db
+    environment:
+      POSTGRES_DB: user_service_db_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5440:5432"
+    volumes:
+      - ./db/migration:/docker-entrypoint-initdb.d
+

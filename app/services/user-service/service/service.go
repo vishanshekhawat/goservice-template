@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/vishn007/go-service-template/buisness/repo/user"
 	"github.com/vishn007/go-service-template/foundation/logger"
 )
 
@@ -11,11 +12,15 @@ type Service interface {
 }
 
 type UsersService struct {
-	log *logger.Logger
+	repo user.UserRepository
+	log  *logger.Logger
 }
 
-func NewService(log *logger.Logger) Service {
+func NewService(log *logger.Logger, userRepo user.UserRepository) Service {
+
+	//Init Repositories
 	return &UsersService{
-		log: log,
+		log:  log,
+		repo: userRepo,
 	}
 }

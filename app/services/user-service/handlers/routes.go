@@ -6,6 +6,9 @@ import (
 
 	authHandler "github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/auth"
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/users"
+	"github.com/vishn007/go-service-template/app/services/user-service/service"
+	"github.com/vishn007/go-service-template/buisness/repo"
+	"github.com/vishn007/go-service-template/buisness/repo/user"
 	"github.com/vishn007/go-service-template/buisness/web/auth"
 	"github.com/vishn007/go-service-template/buisness/web/middleware"
 	"github.com/vishn007/go-service-template/foundation/logger"
@@ -17,13 +20,18 @@ type APIMuxConfig struct {
 	Shutdown chan os.Signal
 	Log      *logger.Logger
 	Auth     *auth.Auth
+	Db       repo.Database
 }
 
 func APIMux(cfg APIMuxConfig) *web.App {
 
 	app := web.NewApp(cfg.Shutdown, middleware.Logger(cfg.Log), middleware.Errors(cfg.Log), middleware.Panics(), middleware.RateLimiter(), middleware.Metrics())
 
-	userHandlers := users.New(cfg.Log)
+	userRepo := user.GetUserRepository(cfg.Db)
+
+	userService := service.NewService(cfg.Log, userRepo)
+	userHandlers := users.New(cfg.Log, userService)
+
 	authHandlers := authHandler.New(cfg.Log, cfg.Auth)
 	app.Handle(http.MethodGet, "/test", userHandlers.Test)
 	app.Handle(http.MethodPost, "/generate-token", authHandlers.GenerateToken)

@@ -20,9 +20,7 @@ type UserHandlers struct {
 }
 
 // New constructs a handlers for route access.
-func New(log *logger.Logger) *UserHandlers {
-
-	userService := service.NewService(log)
+func New(log *logger.Logger, userService service.Service) *UserHandlers {
 	return &UserHandlers{
 		log: log,
 		srv: userService,

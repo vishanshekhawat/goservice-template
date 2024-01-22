@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers"
+	"github.com/vishn007/go-service-template/buisness/repo"
 	"github.com/vishn007/go-service-template/buisness/web/auth"
 
 	"github.com/vishn007/go-service-template/foundation/logger"
@@ -42,9 +43,12 @@ func run(log *logger.Logger) error {
 
 	log.Infow(context.TODO(), "startup", "status", "initializing V1 API support")
 
+	// Create a DB Connection
+	db, err := repo.GetDataBaseConnection("mysql")
+	if err != nil {
+		return fmt.Errorf("constructing db: %w", err)
+	}
 	//--------------------Auth----------------------//
-
-	// Simple keystore versus using Vault.
 
 	authCfg := auth.Config{
 		Log:    log,
@@ -64,6 +68,7 @@ func run(log *logger.Logger) error {
 		Shutdown: shutdown,
 		Log:      log,
 		Auth:     auth,
+		Db:       db,
 	})
 
 	api := http.Server{
