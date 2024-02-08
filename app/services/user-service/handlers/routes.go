@@ -27,7 +27,7 @@ func APIMux(cfg APIMuxConfig) *web.App {
 
 	app := web.NewApp(cfg.Shutdown, middleware.Logger(cfg.Log), middleware.Errors(cfg.Log), middleware.Panics(), middleware.RateLimiter(), middleware.Metrics())
 
-	userRepo := userrepo.GetUserDBRepository(cfg.Db)
+	userRepo := userrepo.GetUserRepository(cfg.Db)
 
 	userService := service.NewService(cfg.Log, userRepo)
 	userHandlers := users.New(cfg.Log, userService)

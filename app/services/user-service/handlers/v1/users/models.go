@@ -1,10 +1,13 @@
 package users
 
-import "github.com/vishn007/go-service-template/buisness/validate"
+import (
+	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
+	"github.com/vishn007/go-service-template/buisness/validate"
+)
 
 type UserResponse struct {
-	Users      []string `json:"users"`
-	TotalUsers string   `json:"total_users"`
+	Users      []models.User `json:"users"`
+	TotalUsers string        `json:"total_users"`
 }
 
 // AppNewUser contains information needed to create a new user.

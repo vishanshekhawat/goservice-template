@@ -38,7 +38,7 @@ func (h *UserHandlers) Test(ctx context.Context, w http.ResponseWriter, r *http.
 		return customerrors.NewRequestError(errors.New("TRUSTED ERROR"), http.StatusBadRequest)
 	}
 
-	res := h.srv.GetUsers(ctx)
+	res := []string{"1", "2"}
 
 	h.log.Infow(ctx, "Test Message")
 
@@ -55,8 +55,10 @@ func (h *UserHandlers) GetUsers(ctx context.Context, w http.ResponseWriter, r *h
 	}
 
 	// Call into the business layer
-	res := h.srv.GetUsers(ctx)
-
+	res, err := h.srv.GetUsers(ctx)
+	if err != nil {
+		return customerrors.NewRequestError(err, http.StatusBadRequest)
+	}
 	// Reponse to Client
 	resp := UserResponse{
 		Users:      res,

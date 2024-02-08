@@ -29,6 +29,30 @@ func (m *UserDB) GetUser(id uuid.UUID) (models.User, error) {
 	return models.User{Name: name}, nil
 }
 
+// GetUser retrieves a user from the MySQL database by ID.
+func (m *UserDB) GetUsers() ([]models.User, error) {
+
+	rows, err := m.DB.Query("SELECT name, email FROM users")
+	if err != nil {
+		return []models.User{}, err
+	}
+	defer rows.Close()
+
+	var results []models.User
+	for rows.Next() {
+		var result models.User
+		err := rows.Scan(&result.Name, &result.Email)
+		if err != nil {
+			return results, err
+		}
+
+		results = append(results, result)
+	}
+
+	return results, nil
+
+}
+
 // UpdateUser updates a user in the MySQL database by ID.
 func (m *UserDB) UpdateUser(id uuid.UUID, name, email string) error {
 	_, err := m.DB.Exec("UPDATE users SET name = ?, email = ? WHERE id = ?", name, email, id)

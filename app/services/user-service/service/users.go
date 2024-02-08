@@ -1,9 +1,17 @@
 package service
 
-import "context"
+import (
+	"context"
 
-func (us *UsersService) GetUsers(ctx context.Context) []string {
+	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
+)
 
-	return []string{"users1", "users2"}
+func (us *UsersService) GetUsers(ctx context.Context) ([]models.User, error) {
+
+	users, err := us.repo.GetUsers()
+	if err != nil {
+		return users, err
+	}
+	return users, nil
 
 }

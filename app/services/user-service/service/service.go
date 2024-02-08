@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"github.com/vishn007/go-service-template/buisness/repo/userrepo"
+	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 	"github.com/vishn007/go-service-template/foundation/logger"
 )
 
 type Service interface {
-	GetUsers(context.Context) []string
+	GetUsers(context.Context) ([]models.User, error)
 }
 
 type UsersService struct {
