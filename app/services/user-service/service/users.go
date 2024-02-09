@@ -15,3 +15,13 @@ func (us *UsersService) GetUsers(ctx context.Context) ([]models.User, error) {
 	return users, nil
 
 }
+
+func (us *UsersService) CreateUser(ctx context.Context, user models.User) (int, error) {
+
+	res, err := us.repo.CreateUser(ctx, user)
+	if err != nil {
+		return 0, err
+	}
+	return res, nil
+
+}

@@ -10,6 +10,7 @@ import (
 
 type Service interface {
 	GetUsers(context.Context) ([]models.User, error)
+	CreateUser(context.Context, models.User) (int, error)
 }
 
 type UsersService struct {

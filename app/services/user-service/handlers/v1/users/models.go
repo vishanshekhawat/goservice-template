@@ -22,3 +22,21 @@ func (app UserRequest) Validate() error {
 	}
 	return nil
 }
+
+type UserCreateRequest struct {
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required"`
+	City  string `json:"city" validate:"required"`
+}
+
+// Validate checks the data in the model is considered clean.
+func (app UserCreateRequest) Validate() error {
+	if err := validate.Check(app); err != nil {
+		return err
+	}
+	return nil
+}
+
+type UserCreateResponse struct {
+	UserID string `json:"id"`
+}
