@@ -2,7 +2,6 @@ package cachedb
 
 import (
 	"fmt"
-	"net/mail"
 	"sync"
 
 	"github.com/google/uuid"
@@ -12,7 +11,7 @@ import (
 // CacheDB represents the PostgreSQL database implementation.
 type CacheDB struct {
 	mu     sync.Mutex
-	Users  map[uuid.UUID]models.User
+	Users  map[int]models.User
 	nextID int
 }
 
@@ -22,9 +21,9 @@ func (m *CacheDB) CreateUser(name, email string) error {
 	defer m.mu.Unlock()
 
 	user := models.User{
-		ID:    uuid.New(),
+		ID:    len(m.Users) + 1,
 		Name:  name,
-		Email: mail.Address{Name: "Vishnu", Address: "VishnSingh007@gmail.com"},
+		Email: email,
 	}
 
 	m.Users[user.ID] = user
@@ -47,7 +46,7 @@ func (m *CacheDB) GetUser(id uuid.UUID) (models.User, error) {
 }
 
 // UpdateUser updates a user in the mock database by ID.
-func (m *CacheDB) UpdateUser(id uuid.UUID, name, email string) error {
+func (m *CacheDB) UpdateUser(id int, name, email string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -57,14 +56,14 @@ func (m *CacheDB) UpdateUser(id uuid.UUID, name, email string) error {
 	}
 
 	user.Name = name
-	user.Email = mail.Address{Address: email}
+	user.Email = email
 	m.Users[id] = user
 
 	return nil
 }
 
 // DeleteUser deletes a user from the mock database by ID.
-func (m *CacheDB) DeleteUser(id uuid.UUID) error {
+func (m *CacheDB) DeleteUser(id int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -75,4 +74,9 @@ func (m *CacheDB) DeleteUser(id uuid.UUID) error {
 
 	delete(m.Users, id)
 	return nil
+}
+
+// DeleteUser deletes a user from the mock database by ID.
+func (m *CacheDB) GetUsers() ([]models.User, error) {
+	return []models.User{}, nil
 }

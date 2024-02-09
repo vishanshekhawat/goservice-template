@@ -27,7 +27,7 @@ func APIMux(cfg APIMuxConfig) *web.App {
 
 	app := web.NewApp(cfg.Shutdown, middleware.Logger(cfg.Log), middleware.Errors(cfg.Log), middleware.Panics(), middleware.RateLimiter(), middleware.Metrics())
 
-	userRepo := userrepo.GetUserDBRepository(cfg.Db)
+	userRepo := userrepo.GetUserRepository(cfg.Db)
 
 	userService := service.NewService(cfg.Log, userRepo)
 	userHandlers := users.New(cfg.Log, userService)
@@ -36,7 +36,12 @@ func APIMux(cfg APIMuxConfig) *web.App {
 	app.Handle(http.MethodGet, "/test", userHandlers.Test)
 	app.Handle(http.MethodPost, "/generate-token", authHandlers.GenerateToken)
 	app.Handle(http.MethodPost, "/test/auth", userHandlers.Test, middleware.Authenticate(cfg.Auth), middleware.Authorize(cfg.Auth, auth.RuleAdminOnly))
-	app.Handle(http.MethodPost, "/api/v1/get-users", userHandlers.GetUsers)
+
+	// Users Crud
+	app.Handle(http.MethodGet, "/api/v1/get-users", userHandlers.GetUsers)
+	app.Handle(http.MethodPost, "/api/v1/create-user", userHandlers.CreateUser)
+	//app.Handle(http.MethodPost, "/api/v1/update-user/$1", userHandlers.UpdateUser)
+	//app.Handle(http.MethodPost, "/api/v1/delete-users/$1", userHandlers.DeleteUser)
 
 	return app
 }

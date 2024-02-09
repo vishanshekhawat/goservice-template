@@ -1,12 +1,16 @@
 package repo
 
-import "database/sql"
+import (
+	"database/sql"
+
+	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
+)
 
 type UserCache struct {
 }
 
 // Connect initializes a connection to the in-memory cache.
-func (p *UserCache) Connect() error {
+func (p *UserCache) Connect(cfg models.Config) error {
 	return nil
 }
 

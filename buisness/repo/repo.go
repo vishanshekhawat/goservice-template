@@ -3,28 +3,31 @@ package repo
 import (
 	"database/sql"
 	"fmt"
+
+	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 )
 
 type Database interface {
-	Connect() error
-	Close() error
+	Connect(models.Config) error
 	GetConn() *sql.DB
+	Close() error
 }
 
-func GetDataBaseConnection(dBType string) (Database, error) {
+func GetDataBaseConnection(dBCfg models.Config) (Database, error) {
 	var database Database
 
-	switch dBType {
-	case "postgres":
+	switch dBCfg.Type {
+	case "MYSQL":
 		database = &MySQLDB{}
-	case "mysql":
+	case "INMEMORY":
 		database = &UserCache{}
 	default:
-		return nil, fmt.Errorf("unsupported database type: %s", dBType)
+		return nil, fmt.Errorf("unsupported database type: %v", dBCfg)
 	}
 
-	if err := database.Connect(); err != nil {
+	if err := database.Connect(dBCfg); err != nil {
 		return nil, err
 	}
+
 	return database, nil
 }

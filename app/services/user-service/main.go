@@ -12,6 +12,7 @@ import (
 
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers"
 	"github.com/vishn007/go-service-template/buisness/repo"
+	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 	"github.com/vishn007/go-service-template/buisness/web/auth"
 
 	"github.com/vishn007/go-service-template/foundation/logger"
@@ -44,7 +45,19 @@ func run(log *logger.Logger) error {
 	log.Infow(context.TODO(), "startup", "status", "initializing V1 API support")
 
 	// Create a DB Connection
-	db, err := repo.GetDataBaseConnection("mysql")
+
+	// Connect initializes a connection to the MySQL database.
+	dbCfg := models.Config{
+		Type:         "MYSQL",
+		User:         "root",
+		Password:     "123456",
+		HostPort:     "127.0.0.1",
+		Name:         "user-service",
+		MaxIdleConns: 10,
+		MaxOpenConns: 10,
+		DisableTLS:   false,
+	}
+	db, err := repo.GetDataBaseConnection(dbCfg)
 	if err != nil {
 		return fmt.Errorf("constructing db: %w", err)
 	}

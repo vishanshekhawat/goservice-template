@@ -4,6 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
+
+	_ "github.com/go-sql-driver/mysql"
+
+	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 )
 
 type MySQLDB struct {
@@ -11,7 +15,7 @@ type MySQLDB struct {
 }
 
 // Connect initializes a connection to the MySQL database.
-func (m *MySQLDB) Connect() error {
+func (m *MySQLDB) Connect(cfg models.Config) error {
 	sslMode := "require"
 	// if cfg.DisableTLS {
 	// 	sslMode = "disable"
@@ -22,17 +26,20 @@ func (m *MySQLDB) Connect() error {
 	q.Set("timezone", "utc")
 
 	u := url.URL{
-		Scheme:   "postgres",
-		User:     url.UserPassword("cfg.User", "cfg.Password"),
-		Host:     "localhost",
-		Path:     "user_service_db_dev",
+		Scheme:   "mysql",
+		User:     url.UserPassword(cfg.User, cfg.Password),
+		Host:     "127:0:0:1:3306",
+		Path:     "sale_api",
 		RawQuery: q.Encode(),
 	}
+	fmt.Println(u.String())
+	db, err := sql.Open("mysql", "root:"+cfg.Password+"@tcp("+cfg.HostPort+":3306)/sale_api")
 
-	db, err := sql.Open("pgx", u.String())
+	// db, err := sql.Open("mysql", u.String())
 	if err != nil {
-		return err
+		panic(err.Error())
 	}
+
 	db.SetMaxIdleConns(5)
 	db.SetMaxOpenConns(5)
 
