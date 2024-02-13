@@ -1,9 +1,9 @@
 package userdb
 
 import (
+	"context"
 	"database/sql"
 
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 )
@@ -14,25 +14,25 @@ type UserDB struct {
 }
 
 // CreateUser creates a new user in the MySQL database.
-func (m *UserDB) CreateUser(name, email string) error {
-	_, err := m.DB.Exec("INSERT INTO users (name, email) VALUES (?, ?)", name, email)
-	return err
-}
+func (m *UserDB) CreateUser(ctx context.Context, user models.User) (int, error) {
+	res, err := m.DB.ExecContext(ctx, "INSERT INTO users (name, email,city) VALUES (?, ?,?)", user.Name, user.Email, user.City)
 
-// GetUser retrieves a user from the MySQL database by ID.
-func (m *UserDB) GetUser(id uuid.UUID) (models.User, error) {
-	var name, email string
-	err := m.DB.QueryRow("SELECT name, email FROM users WHERE id = ?", id).Scan(&name, &email)
 	if err != nil {
-		return models.User{}, err
+		return 0, err
 	}
-	return models.User{Name: name}, nil
+
+	userID, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(userID), nil
 }
 
 // GetUser retrieves a user from the MySQL database by ID.
 func (m *UserDB) GetUsers() ([]models.User, error) {
 
-	rows, err := m.DB.Query("SELECT name, email FROM users")
+	rows, err := m.DB.Query("SELECT id,name, email,city FROM users")
 	if err != nil {
 		return []models.User{}, err
 	}
@@ -41,7 +41,7 @@ func (m *UserDB) GetUsers() ([]models.User, error) {
 	var results []models.User
 	for rows.Next() {
 		var result models.User
-		err := rows.Scan(&result.Name, &result.Email)
+		err := rows.Scan(&result.ID, &result.Name, &result.Email, &result.City)
 		if err != nil {
 			return results, err
 		}
@@ -50,17 +50,4 @@ func (m *UserDB) GetUsers() ([]models.User, error) {
 	}
 
 	return results, nil
-
-}
-
-// UpdateUser updates a user in the MySQL database by ID.
-func (m *UserDB) UpdateUser(id uuid.UUID, name, email string) error {
-	_, err := m.DB.Exec("UPDATE users SET name = ?, email = ? WHERE id = ?", name, email, id)
-	return err
-}
-
-// DeleteUser deletes a user from the MySQL database by ID.
-func (m *UserDB) DeleteUser(id uuid.UUID) error {
-	_, err := m.DB.Exec("DELETE FROM users WHERE id = ?", id)
-	return err
 }

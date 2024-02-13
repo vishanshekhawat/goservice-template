@@ -1,10 +1,9 @@
 package cachedb
 
 import (
-	"fmt"
+	"context"
 	"sync"
 
-	"github.com/google/uuid"
 	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 )
 
@@ -16,67 +15,32 @@ type CacheDB struct {
 }
 
 // CreateUser creates a new user in the mock database.
-func (m *CacheDB) CreateUser(name, email string) error {
+func (m *CacheDB) CreateUser(ctx context.Context, user models.User) (int, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	user := models.User{
+	newUser := models.User{
 		ID:    len(m.Users) + 1,
-		Name:  name,
-		Email: email,
+		Name:  user.Name,
+		Email: user.Email,
+		City:  user.City,
 	}
 
-	m.Users[user.ID] = user
+	m.Users[newUser.ID] = newUser
 	m.nextID++
 
-	return nil
-}
-
-// GetUser retrieves a user from the mock database by ID.
-func (m *CacheDB) GetUser(id uuid.UUID) (models.User, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	user, ok := m.Users[id]
-	if !ok {
-		return models.User{}, fmt.Errorf("user not found")
-	}
-
-	return user, nil
-}
-
-// UpdateUser updates a user in the mock database by ID.
-func (m *CacheDB) UpdateUser(id int, name, email string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	user, ok := m.Users[id]
-	if !ok {
-		return fmt.Errorf("user not found")
-	}
-
-	user.Name = name
-	user.Email = email
-	m.Users[id] = user
-
-	return nil
-}
-
-// DeleteUser deletes a user from the mock database by ID.
-func (m *CacheDB) DeleteUser(id int) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	_, ok := m.Users[id]
-	if !ok {
-		return fmt.Errorf("user not found")
-	}
-
-	delete(m.Users, id)
-	return nil
+	return user.ID, nil
 }
 
 // DeleteUser deletes a user from the mock database by ID.
 func (m *CacheDB) GetUsers() ([]models.User, error) {
-	return []models.User{}, nil
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	var users []models.User
+	for _, val := range m.Users {
+		users = append(users, val)
+	}
+
+	return users, nil
 }

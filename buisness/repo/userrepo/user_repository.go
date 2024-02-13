@@ -1,7 +1,8 @@
 package userrepo
 
 import (
-	"github.com/google/uuid"
+	"context"
+
 	"github.com/vishn007/go-service-template/buisness/repo"
 	"github.com/vishn007/go-service-template/buisness/repo/userrepo/cachedb"
 	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
@@ -9,10 +10,7 @@ import (
 )
 
 type UserRepository interface {
-	CreateUser(name, email string) error
-	GetUser(id uuid.UUID) (models.User, error)
-	UpdateUser(id uuid.UUID, name, email string) error
-	DeleteUser(id uuid.UUID) error
+	CreateUser(context.Context, models.User) (int, error)
 	GetUsers() ([]models.User, error)
 }
 
@@ -34,7 +32,7 @@ func GetUserRepository(dbSql repo.Database) UserRepository {
 		}
 	case "IN-MEMORY":
 		return &cachedb.CacheDB{
-			Users: map[uuid.UUID]models.User{},
+			Users: map[int]models.User{},
 		}
 	}
 	return nil
