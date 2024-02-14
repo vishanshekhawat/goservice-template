@@ -115,7 +115,10 @@ func run(log *logger.Logger) error {
 	}
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(interceptor.LoggingInterceptor),
+		grpc.ChainUnaryInterceptor(
+			interceptor.TraceInterceptor,
+			interceptor.LoggingInterceptor,
+		),
 	)
 	// 👇 Register the Post gRPC service
 	pb.RegisterUserServiceServer(grpcServer, postServer)
