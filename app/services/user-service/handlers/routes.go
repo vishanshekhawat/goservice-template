@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/vishn007/go-service-template/app/services/user-service/handlers/grpc"
 	authHandler "github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/auth"
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers/v1/users"
 	"github.com/vishn007/go-service-template/app/services/user-service/service"
@@ -44,4 +45,16 @@ func APIMux(cfg APIMuxConfig) *web.App {
 	//app.Handle(http.MethodPost, "/api/v1/delete-users/$1", userHandlers.DeleteUser)
 
 	return app
+}
+
+func APIGrpcMux(cfg APIMuxConfig) *grpc.PostServer {
+
+	userRepo := userrepo.GetUserRepository(cfg.Db)
+	userService := service.NewService(cfg.Log, userRepo)
+
+	postServer, err := grpc.NewGrpcPostServer(userService)
+	if err != nil {
+		return nil
+	}
+	return postServer
 }

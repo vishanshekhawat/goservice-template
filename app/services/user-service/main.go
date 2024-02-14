@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,9 +12,12 @@ import (
 	"time"
 
 	"github.com/vishn007/go-service-template/app/services/user-service/handlers"
+	"github.com/vishn007/go-service-template/buisness/grpc/interceptor"
 	"github.com/vishn007/go-service-template/buisness/repo"
 	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 	"github.com/vishn007/go-service-template/buisness/web/auth"
+	pb "github.com/vishn007/go-service-template/proto"
+	"google.golang.org/grpc"
 
 	"github.com/vishn007/go-service-template/foundation/logger"
 	"go.uber.org/zap"
@@ -100,6 +104,40 @@ func run(log *logger.Logger) error {
 		serverErrors <- api.ListenAndServe()
 	}()
 
+	postServer := handlers.APIGrpcMux(handlers.APIMuxConfig{
+		Shutdown: shutdown,
+		Log:      log,
+		Auth:     auth,
+		Db:       db,
+	})
+	if err != nil {
+		log.Fatal("cannot create grpc postServer: ", err)
+	}
+
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			interceptor.TraceInterceptor(),
+			interceptor.LoggingInterceptor(),
+			interceptor.ErrorInterceptor(),
+			interceptor.PanicInterceptor(),
+		),
+	)
+	// 👇 Register the Post gRPC service
+	pb.RegisterUserServiceServer(grpcServer, postServer)
+	go func() {
+
+		listener, err := net.Listen("tcp", ":5001")
+		if err != nil {
+			log.Fatal("cannot create grpc server: ", err)
+		}
+
+		log.Infow(context.TODO(), "start gRPC server on %s", listener.Addr().String())
+		err = grpcServer.Serve(listener)
+		if err != nil {
+			log.Fatal("cannot create grpc server: ", err)
+		}
+	}()
+
 	// -------------------------------------------------------------------------
 	// Shutdown
 
@@ -112,6 +150,10 @@ func run(log *logger.Logger) error {
 		defer log.Infow(context.TODO(), "shutdown", "status", "shutdown complete", "signal", sig)
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
+
+		go func() {
+			grpcServer.GracefulStop()
+		}()
 
 		if err := api.Shutdown(ctx); err != nil {
 			api.Close()

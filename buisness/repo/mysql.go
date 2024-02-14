@@ -33,11 +33,12 @@ func (m *MySQLDB) Connect(cfg models.Config) error {
 		RawQuery: q.Encode(),
 	}
 	fmt.Println(u.String())
-	db, err := sql.Open("mysql", "root:"+cfg.Password+"@tcp("+cfg.HostPort+":3306)/sale_api")
+	db, err := sql.Open("mysql", "user:"+cfg.Password+"@tcp("+cfg.HostPort+":3306)/users_db")
 
 	// db, err := sql.Open("mysql", u.String())
 	if err != nil {
-		panic(err.Error())
+		//panic(err.Error())
+		return err
 	}
 
 	db.SetMaxIdleConns(5)

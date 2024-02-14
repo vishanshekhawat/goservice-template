@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/vishn007/go-service-template/pb";
+
+import "proto/post.proto";
+import "proto/rpc_create_post.proto";
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (UserResponse) {}
+    rpc GetUsers(GetUsersRequest) returns (stream User) {}
+}
+
+message GetUsersRequest {
+    optional int64 page = 1;
+    optional int64 limit = 2;
+}
+
