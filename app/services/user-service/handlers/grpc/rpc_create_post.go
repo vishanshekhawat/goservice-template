@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"math/rand"
 	"strconv"
 
 	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
@@ -11,6 +12,10 @@ import (
 )
 
 func (postServer *PostServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
+
+	if rand.Intn(10)%2 == 0 {
+		panic("hii")
+	}
 
 	id, err := postServer.UserService.CreateUser(ctx, models.User{
 		Name:  req.Name,

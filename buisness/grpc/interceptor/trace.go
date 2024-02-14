@@ -10,16 +10,18 @@ import (
 )
 
 // gRPC TraceInterceptor which helps to log
-func TraceInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func TraceInterceptor() grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ any, err error) {
 
-	requestID := uuid.NewString()
+		requestID := uuid.NewString()
 
-	v := grpcF.Values{
-		TraceID:       uuid.NewString(),
-		CoRealationID: requestID,
-		Now:           time.Now().UTC(),
+		v := grpcF.Values{
+			TraceID:       uuid.NewString(),
+			CoRealationID: requestID,
+			Now:           time.Now().UTC(),
+		}
+		ctx = context.WithValue(ctx, grpcF.TraceKey, &v)
+		resp, err := handler(ctx, req)
+		return resp, err
 	}
-	ctx = context.WithValue(ctx, grpcF.TraceKey, &v)
-	resp, err := handler(ctx, req)
-	return resp, err
 }

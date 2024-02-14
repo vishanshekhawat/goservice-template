@@ -116,8 +116,10 @@ func run(log *logger.Logger) error {
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			interceptor.TraceInterceptor,
-			interceptor.LoggingInterceptor,
+			interceptor.TraceInterceptor(),
+			interceptor.LoggingInterceptor(),
+			interceptor.ErrorInterceptor(),
+			interceptor.PanicInterceptor(),
 		),
 	)
 	// 👇 Register the Post gRPC service

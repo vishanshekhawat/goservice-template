@@ -9,11 +9,12 @@ import (
 )
 
 // gRPC loggingInterceptor which helps to log
-func LoggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-
-	log.Printf("Received request: %v", req)
-	v := grpcF.GetValues(ctx)
-	resp, err := handler(ctx, req)
-	log.Printf("Response: %v, %s", resp, v.TraceID)
-	return resp, err
+func LoggingInterceptor() grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ any, err error) {
+		log.Printf("Received request: %v", req)
+		v := grpcF.GetValues(ctx)
+		resp, err := handler(ctx, req)
+		log.Printf("Response: %v, %s,%v", resp, v.TraceID, err)
+		return resp, err
+	}
 }
