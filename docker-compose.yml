@@ -1,34 +1,28 @@
-version: '3.1'
+version: '3.3'
 
 services:
-  user-service:
-    build:
-        context: .
-        args:
-          - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
-        dockerfile: Dockerfile
-    container_name: user-service
-    ports:
-      - 3000:3000
-    depends_on:
-      user-service-db:
-        condition: service_healthy
-
-  user-service-db:
-    image: postgres:latest
-    container_name: user-service-db
+  db:
+    image: mysql:5.7
+    restart: always
     environment:
-      POSTGRES_DB: user_service_db_dev
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PGDATA: /var/lib/postgresql/data/pgdata
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      MYSQL_DATABASE: 'users_db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: '123456'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: '123456'
     ports:
-      - "5440:5432"
+      # <Port exposed> : <MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
     volumes:
-      - ./db/migration:/docker-entrypoint-initdb.d
+      - my-db:/var/lib/mysql
+# Names our volume
+volumes:
+  my-db:
+
 

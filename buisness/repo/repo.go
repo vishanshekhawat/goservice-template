@@ -3,6 +3,7 @@ package repo
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	models "github.com/vishn007/go-service-template/buisness/repo/userrepo/model"
 )
@@ -27,6 +28,11 @@ func GetDataBaseConnection(dBCfg models.Config) (Database, error) {
 
 	if err := database.Connect(dBCfg); err != nil {
 		return nil, err
+	}
+
+	err := database.GetConn().Ping()
+	if err != nil {
+		log.Fatal("Error:", err)
 	}
 
 	return database, nil

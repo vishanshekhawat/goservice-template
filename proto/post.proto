@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/vishn007/go-service-template/pb";
+
+message User {
+    string Id = 1;
+    string Email = 2;
+    string City = 3;
+}
+
+message UserResponse { User user = 1; }
